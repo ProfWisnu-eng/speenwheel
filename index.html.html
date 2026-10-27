@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#f6f7f2" />
+<title>Team Picker — v5.0 Three Names per Spin</title>
+<style>
+:root{--ink:#252a29;--sub:#68736d;--line:#e2e8dc;--green:#256c4b;--lime:#dfeeb4;--yellow:#ffce38;--cream:#fafbf7;--paper:#ffffff;--shadow:0 8px 32px rgba(41,56,36,.065);--radius:17px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;min-height:100vh}
+button,input,textarea{font:inherit}button{cursor:pointer;transition:filter .18s,transform .18s,box-shadow .18s}button:not(:disabled):hover{filter:brightness(.96)}button:not(:disabled):active{transform:translateY(1px)}button:disabled{opacity:.47;cursor:not-allowed}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #9fcd88;outline-offset:2px}
+h1,h2,h3,p{margin:0}h1{font-size:clamp(27px,3.1vw,40px);letter-spacing:-1.5px;font-weight:850}h2{font-size:17px}small{font-size:12px}
+.topbar{height:66px;background:#fff;border-bottom:1px solid #e7ebdf;display:flex;align-items:center;justify-content:space-between;padding:0 max(22px,calc((100vw - 1480px)/2));gap:15px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:17px;letter-spacing:-.5px;white-space:nowrap}.logo-icon{width:34px;height:34px;background:conic-gradient(#eebf26 0 25%,#fff8b1 0 50%,#247c48 0 75%,#92b53a 0);border-radius:50%;display:grid;place-items:center;border:3px solid #f8f8ee;box-shadow:0 0 0 1px #dfe6d9;color:white;font-size:10px}.logo .accent{color:#418c53}
+.nav{display:flex;gap:5px;align-items:center;flex-wrap:wrap}.nav button{border:0;background:transparent;color:#5f6860;font-size:12px;font-weight:700;padding:9px 11px;border-radius:9px}.nav button:hover{background:#f2f5ed}.nav button.primary{background:#e3edd4;color:#2a6039}
+.hero{padding:26px 18px 22px;text-align:center;background:radial-gradient(ellipse 500px 120px at 50% 0,#e7f1d9b8,transparent);border-bottom:1px solid #ecf0e6}.hero-wheel{width:48px;height:48px;display:grid;place-items:center;margin:0 auto 10px;background:conic-gradient(#ffc522 0 25%,#f8ec9a 0 50%,#37804b 0 75%,#a1bf43 0);border-radius:50%;border:4px solid white;box-shadow:0 0 0 1px #dee7d5}.hero-wheel:after{content:'✦';display:grid;place-items:center;width:16px;height:16px;border-radius:50%;background:white;color:#277949;font-size:10px}.hero p{color:#68736b;margin-top:5px;font-size:14px}
+.shell{max-width:1500px;margin:0 auto;padding:22px 20px 36px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 347px;gap:18px;align-items:start}
+.main-area{min-width:0}.input-side{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;position:sticky;top:12px}
+.board-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap}.toolbar-actions{display:flex;gap:8px;flex-wrap:wrap}.tab{border:1px solid #d7e4cc;background:white;border-radius:12px;padding:10px 15px;font-size:13px;font-weight:800;color:#2f6744}.tab span{margin-left:5px;background:#eaf3df;border-radius:99px;padding:3px 7px;font-size:11px}.btn{padding:10px 12px;border:1px solid #dce4d5;border-radius:10px;background:white;color:#425249;font-size:12px;font-weight:750;white-space:nowrap}.btn.green{background:#2b7a50;color:white;border-color:#2b7a50}.btn.yellow{background:#ffcd37;color:#272b22;border-color:#f0b928}.btn.lite{background:#f3f7ed}
+.play-card{border:1px solid #dde7d6;background:#fff;border-radius:var(--radius);padding:19px 22px;display:grid;grid-template-columns:minmax(285px,.87fr) minmax(285px,1.1fr);gap:24px;align-items:center;box-shadow:var(--shadow);position:relative;overflow:hidden}.play-card:before{content:'';position:absolute;width:300px;height:300px;background:#eaf5db;border-radius:50%;left:-200px;top:-165px;pointer-events:none}
+.wheel-section{position:relative;text-align:center;max-width:390px;margin:auto;width:100%}.wheel-box{position:relative;aspect-ratio:1;margin:0 auto;width:100%;max-width:353px;filter:drop-shadow(0 8px 8px #23412119)}canvas{width:100%;height:100%;display:block}.pointer{position:absolute;z-index:3;top:0;left:50%;transform:translateX(-50%);width:0;height:0;border:12px solid transparent;border-top:26px solid #263f2c;filter:drop-shadow(0 2px 1px #ffffff)}.start-button{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:88px;height:88px;border:7px solid #fff;border-radius:50%;background:#242823;color:white;font-weight:850;letter-spacing:.5px;font-size:14px;z-index:4;box-shadow:0 5px 12px #0004}.start-button:not(:disabled):active{transform:translate(-50%,-50%) scale(.96)}.start-button:disabled{color:#bbb}
+
+.play-instructions{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:13px;min-width:0}.eyebrow{font-size:11px;color:#35814f;letter-spacing:1.8px;font-weight:900}.play-title{font-size:clamp(23px,2.5vw,35px);line-height:1.15;font-weight:850;letter-spacing:-1px}.play-title mark{background:transparent;color:#328257}.play-sub{font-size:13px;color:#707970;line-height:1.6;max-width:440px}.winner-box{width:100%;min-height:100px;border:1px solid #e4ecd9;background:#f9fbf5;border-radius:13px;padding:15px;display:flex;flex-direction:column;justify-content:center;gap:5px}.winner-label{font-size:10px;font-weight:900;color:#7b8b75;letter-spacing:1.4px}.winner-name{font-size:clamp(16px,1.7vw,21px);font-weight:850;color:#2b5038;line-height:1.3;overflow-wrap:anywhere}.winner-team{font-size:13px;color:#7b8b75;font-weight:700}.play-actions{display:flex;gap:9px;flex-wrap:wrap;width:100%}.play-actions .btn{flex:1;font-size:13px;padding:13px 11px}.info-line{font-size:11px;color:#71806e;line-height:1.6;display:flex;gap:8px}.info-line svg{flex:none;margin-top:2px}
+.draw-result-list{display:flex;flex-direction:column;gap:6px;margin-top:6px;width:100%}.draw-result-row{display:flex;justify-content:space-between;align-items:flex-start;gap:9px;padding:7px 9px;border-radius:9px;border:1px solid #e2ebdd;background:#fff;color:#3b5040;font-size:12px;font-weight:650;line-height:1.35}.draw-result-row .draw-name{min-width:0;overflow-wrap:anywhere}.draw-result-row .draw-badge{flex:none;border-radius:6px;color:#2e6443;background:#e1f1db;padding:4px 6px;font-size:11px;font-weight:850}.draw-result-row.auto{border-style:dashed;background:#f5f8f0}.draw-result-row.auto .draw-badge{background:#eef0df;color:#647644}
+.group-heading{margin:23px 1px 12px;display:flex;gap:15px;justify-content:space-between;align-items:center}.group-heading h2{font-size:17px;letter-spacing:-.35px}.subpill{display:inline-flex;align-items:center;gap:6px;color:#6d786e;font-size:12px;background:#eaf2e6;border:1px solid #e0e9dc;padding:7px 11px;border-radius:30px}
+.groups-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.team-card{background:#fff;border:1px solid #dfe8d9;min-height:163px;border-radius:13px;overflow:hidden;box-shadow:0 4px 16px #32441e0a;transition:border-color .2s,box-shadow .2s}.team-card.active{border-color:#4d9871;box-shadow:0 0 0 2px #77be9660,0 8px 22px #2a6c5f19}.team-title{display:flex;align-items:center;justify-content:space-between;padding:10px 13px;gap:8px;color:#283329;font-size:13px;font-weight:850}.team-count{font-size:11px;border-radius:6px;background:#ffffffb5;padding:4px 8px;color:#4b5b49}.team-body{padding:9px 12px 14px;min-height:126px}.no-member{color:#a4ada0;font-size:12px;display:flex;align-items:center;justify-content:center;min-height:98px;border:1px dashed #edf0e8;border-radius:9px}.member{padding:5px 0;display:flex;gap:8px;font-size:12.5px;align-items:flex-start;color:#37453d;font-weight:550;line-height:1.38;overflow-wrap:anywhere}.member-number{min-width:21px;color:#7d8c79;font-weight:800}.team-card:nth-child(1) .team-title{background:#d4e6a0}.team-card:nth-child(2) .team-title{background:#ffd04b}.team-card:nth-child(3) .team-title{background:#c9e6b5}.team-card:nth-child(4) .team-title{background:#ffe29c}.team-card:nth-child(5) .team-title{background:#bde1ca}.team-card:nth-child(6) .team-title{background:#d9e3fa}.team-card:nth-child(7) .team-title{background:#ead5ef}.team-card:nth-child(8) .team-title{background:#f9d5b5}
+.side-header{display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid #edf0e7;padding:17px 18px}.side-header h2{font-size:15px;font-weight:900;letter-spacing:.7px}.count-pill{background:#eaf2e1;color:#357a4e;border-radius:8px;padding:5px 9px;font-weight:850;font-size:11px}.side-section{padding:16px 18px;border-bottom:1px solid #edf0e7}.side-title{font-size:12px;font-weight:850;color:#414d43;margin-bottom:11px}.quick-input{display:block;width:100%;min-height:144px;resize:vertical;padding:12px;border:1px solid #d7e4d0;border-radius:11px;background:#fbfdf9;color:#273b2d;font-size:13px;line-height:1.6;transition:border-color .2s,box-shadow .2s}.quick-input:focus{outline:none;border-color:#65a477;box-shadow:0 0 0 3px #d9efdc}.quick-input::placeholder{color:#9aa59b}.confirm-names{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:11px;padding:12px 14px;background:#2b7a50;color:white;border:1px solid #2b7a50;border-radius:10px;font-size:13px;font-weight:850;letter-spacing:.35px}.confirm-names:hover:not(:disabled){background:#226743}.input-form{display:flex;gap:7px}.input-form input{min-width:0;flex:1;width:100%;border:1px solid #d6e0d2;border-radius:9px;background:#fbfdf9;font-size:13px;padding:11px 10px;color:#314536}.input-form button{width:43px;border:0;border-radius:8px;background:#2c8356;color:white;font-size:24px;font-weight:500}.helper{font-size:11px;color:#879086;line-height:1.5;margin-top:9px}.help-status{min-height:18px;font-size:11px;margin-top:8px;color:#bd603b}.side-buttonrow{display:flex;gap:6px;margin-top:12px}.side-buttonrow .btn{flex:1;white-space:normal;font-size:10.5px;padding:9px 7px}
+.names-list{max-height:234px;overflow:auto;border:1px solid #e5ece1;border-radius:9px;margin-top:12px;background:#fbfcf8;scrollbar-color:#b6c7a7 transparent}.item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-bottom:1px solid #eaf0e6}.item:last-child{border-bottom:0}.item .index{color:#99a998;font-size:11px;min-width:18px;font-weight:750}.item .name{flex:1;min-width:0;font-size:12px;line-height:1.3;overflow-wrap:anywhere}.item .del{background:transparent;border:0;color:#90a090;font-size:18px;line-height:1;padding:0 3px}.item .del:hover{color:#c0524b}.empty-list{text-align:center;padding:27px 15px;color:#92a08e;font-size:12px}.setting-box{display:flex;flex-direction:column;gap:11px}.summary-placeholder{padding:12px;border:1px dashed #dfe8d9;border-radius:10px;color:#647565;font-size:12px;line-height:1.5;background:#f9fbf6}.final-summary{display:none}.final-summary.show{display:flex}.setting-row{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px;color:#526054}.setting-row strong{color:#2c3d30}.readonly{padding:7px 10px;border:1px solid #dce8d4;background:#f3f7ed;border-radius:8px;color:#3d774d;font-size:11px;font-weight:750}.meter{height:8px;background:#eef1e8;border-radius:10px;overflow:hidden}.meter > div{height:100%;width:0;background:linear-gradient(90deg,#7cb45c,#267d51);transition:width .3s}.note{display:flex;gap:10px;background:#eff6e8;border:1px solid #e0edd5;border-radius:11px;padding:12px;color:#526d4e;font-size:11px;line-height:1.6}.side-footer{padding:13px 18px;display:flex;gap:7px}.side-footer .btn{flex:1}
+.footer{text-align:center;color:#9da899;font-size:11px;margin:25px 0 0}
+.toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,30px);opacity:0;transition:.25s;pointer-events:none;background:#273d30;color:white;border-radius:12px;padding:12px 18px;font-size:12px;font-weight:700;z-index:20;box-shadow:0 10px 24px #0002;max-width:min(90vw,500px);text-align:center}.toast.show{transform:translate(-50%,0);opacity:1}
+.modal-backdrop{position:fixed;inset:0;background:#1e362d85;display:none;justify-content:center;align-items:center;padding:16px;z-index:30}.modal-backdrop.open{display:flex}.modal{width:min(100%,580px);background:white;border:1px solid #e0ebd7;padding:24px;border-radius:18px;box-shadow:0 25px 60px #0003}.modal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.modal-top h2{font-size:20px}.modal p{color:#748075;font-size:12px;line-height:1.6}.modal textarea{margin-top:14px;width:100%;height:240px;resize:vertical;border:1px solid #d6e0d1;border-radius:10px;padding:14px;font-size:13px;line-height:1.6}.modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}.modal-close{border:0;background:#eff3e9;border-radius:8px;font-size:20px;width:32px;height:32px;color:#546753}
+@media(max-width:1190px){.layout{grid-template-columns:minmax(0,1fr) 310px}.play-card{grid-template-columns:1fr;gap:10px}.wheel-section{max-width:320px}.play-instructions{align-items:center;text-align:center}.play-instructions .play-sub{max-width:490px}.info-line{text-align:left}}
+@media(max-width:870px){.layout{grid-template-columns:1fr}.input-side{position:static;order:-1}.play-card{grid-template-columns:minmax(210px,.85fr) 1fr}.wheel-section{max-width:325px}.play-instructions{align-items:flex-start;text-align:left}.input-side{display:grid;grid-template-columns:1fr 1fr}.input-side .side-header,.input-side .side-footer{grid-column:1/-1}.side-section{border-right:1px solid #edf0e7}}
+@media(max-width:640px){.shell{padding:14px 11px 25px}.hero{padding:18px 10px}.hero p{font-size:12px}.topbar{padding:0 11px;height:60px}.logo{font-size:15px}.nav{gap:0}.nav button{padding:8px;font-size:11px}.nav .hide-small{display:none}.play-card{grid-template-columns:1fr;padding:14px}.play-instructions{align-items:center;text-align:center;gap:10px}.play-title{font-size:25px}.winner-box{text-align:center}.wheel-section{max-width:315px}.groups-grid{grid-template-columns:1fr}.input-side{display:block}.input-side .side-header,.input-side .side-footer{grid-column:auto}.group-heading{align-items:flex-start}.group-heading h2{font-size:15px}.toolbar-actions .btn{font-size:11px;padding:9px}.hero-wheel{width:40px;height:40px}}
+@media print{body{background:#fff}.topbar,.hero,.play-card,.input-side,.board-toolbar,.footer,.group-heading .subpill,.toast{display:none!important}.layout,.shell{display:block;padding:0}.group-heading{margin:0 0 12px}.groups-grid{grid-template-columns:1fr 1fr}.team-card{break-inside:avoid;min-height:150px;box-shadow:none}.team-body{min-height:auto}}
+
+/* Settings panel */
+.admin-modal{width:min(980px,calc(100vw - 24px));max-height:min(92vh,950px);overflow:auto;padding:23px}
+.admin-top-line{display:flex;gap:10px;align-items:start;justify-content:space-between}
+.admin-tabs{display:flex;gap:7px;margin-top:15px;margin-bottom:15px;border-bottom:1px solid #e4eadf;padding-bottom:12px;flex-wrap:wrap}
+.admin-tab{border:1px solid #dce6d5;color:#56715c;background:white;border-radius:10px;padding:10px 13px;font-size:12px;font-weight:800}
+.admin-tab.active{background:#28774f;color:white;border-color:#28774f}
+.admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:13px 0}
+.admin-team{border:1px solid #dfe8d6;border-radius:12px;overflow:hidden;background:#fff}
+.admin-team-head{font-weight:800;font-size:12px;padding:10px 12px;background:#eaf3e4;display:flex;justify-content:space-between;gap:8px}
+.admin-team:nth-child(2n) .admin-team-head{background:#fff0c2}
+.admin-team textarea{display:block;width:calc(100% - 22px);margin:11px;height:128px;border:1px solid #dde6d5;border-radius:8px;padding:9px 10px;resize:vertical;font-size:12px;line-height:1.65;background:#fcfefb}
+.admin-panel[hidden]{display:none}
+.admin-hint{background:#f4f8ed;border-radius:10px;color:#5c755b;padding:12px 13px;font-size:12px;line-height:1.6}
+.admin-state{font-size:12px;color:#4a6e50;margin-top:12px;min-height:18px;overflow-wrap:anywhere}
+.seed-layout{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:13px 0;max-height:360px;overflow-y:auto}
+.seed-team{border:1px solid #e0e9d9;border-radius:10px;padding:10px}
+.seed-team strong{display:block;margin-bottom:7px;font-size:12px}
+.seed-team label{display:flex;gap:8px;align-items:flex-start;padding:4px 0;font-size:12px;color:#435749;cursor:pointer}
+.seed-team input{accent-color:#298357;width:15px;height:15px;margin-top:1px;flex:none}
+.admin-line{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:12px 0}
+.admin-line select{flex:1;min-width:190px;border:1px solid #d8e4d1;border-radius:9px;padding:10px;color:#37523d;background:white;font-size:12px}
+.admin-danger{color:#b14d3f!important}
+.admin-footer{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;margin-top:14px}
+.btn.admin-link{background:#f4f8e9;color:#386847;border-color:#d7e7ce}
+@media(max-width:620px){.admin-modal{padding:14px}.admin-grid,.seed-layout{grid-template-columns:1fr}.admin-team textarea{height:110px}.admin-footer .btn{flex:1}.admin-modal .modal-top h2{font-size:17px}}
+@media print{#btnSettings,#btnEditorSide,#settingsModal{display:none!important}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="logo"><span class="logo-icon">●</span><span>Team<span class="accent">Picker</span></span></div>
+  <nav class="nav" aria-label="Navigation"><button type="button" id="btnFullscreen" title="Fullscreen">⛶ <span class="hide-small">Fullscreen</span></button><button type="button" id="btnCopy">▤ <span class="hide-small">Copy results</span></button><button type="button" id="btnSettings" title="Edit team setup and reveal flow">⚙ <span class="hide-small">Configure Teams</span></button><button type="button" id="btnReset">↺ Reset</button><button type="button" id="btnExport" class="primary">↓ CSV</button></nav>
+</header>
+<section class="hero"><div class="hero-wheel" aria-hidden="true"></div><h1>Team Picker Wheel</h1><p>Set up team members, enter participants, and reveal the results with an interactive spinning wheel</p></section>
+<main class="shell">
+  <div class="layout">
+    <section class="main-area" aria-label="Wheel and team results">
+      <div class="board-toolbar"><span class="tab">▦ Team Board <span>8</span></span><div class="toolbar-actions"><button type="button" id="btnBoard" class="btn lite">☷ View Board</button><button type="button" id="btnAll" class="btn yellow">⚡ Reveal All</button></div></div>
+      <div class="play-card">
+        <div class="wheel-section"><div class="wheel-box"><canvas id="wheel" width="720" height="720" aria-label="Participant selection wheel" role="img"></canvas><span class="pointer"></span><button type="button" class="start-button" id="btnSpin" disabled aria-label="Spin the wheel">START</button></div></div>
+        <div class="play-instructions"><span class="eyebrow">TEAM GENERATOR</span><div class="play-title">Spin the wheel.<br /><mark>Find the team.</mark></div><p class="play-sub">Type or paste names into <b>INPUTS</b>, then click <b>ENTER NAMES</b> to place them on the wheel. Press START once to draw three names. If fewer than three remain afterward, they will be assigned automatically.</p><div class="winner-box" aria-live="polite"><span class="winner-label">LATEST DRAW RESULTS</span><div id="lastName" class="winner-name">No name selected yet</div><div id="lastTeam" class="winner-team">Selected participants will appear here</div></div><div class="play-actions"><button type="button" id="btnSpinWide" class="btn green" style="width:100%">SPIN WHEEL</button></div><div class="info-line"><span>ⓘ</span><span>Team assignments follow the Settings Mode. The reveal order can be random or prearranged for simulation.</span></div></div>
+      </div>
+      <div id="groupBoard" class="group-heading"><h2>Team Assignment Results</h2><span class="subpill">● <strong id="doneCount">0</strong> / 34 names revealed</span></div>
+      <div id="groups" class="groups-grid"></div>
+    </section>
+    <aside class="input-side" aria-label="Participant input panel">
+      <div class="side-header"><h2>INPUTS</h2><span id="inputsCount" class="count-pill">0 names</span></div>
+      <div class="side-section"><label class="side-title" for="nameInput" style="display:block">✎ Paste or enter names</label><textarea id="nameInput" class="quick-input" rows="5" placeholder="Type or paste names here...&#10;One name per line." aria-label="Type or paste participant names" autocomplete="off" spellcheck="false"></textarea><button type="button" id="btnEnterNames" class="confirm-names">↵ ENTER NAMES</button><p class="helper">Type or paste names (one per line). They will <b>only</b> be added to the wheel after you click <b>ENTER NAMES</b>. Duplicate names are skipped.</p><div id="status" class="help-status" role="status" aria-live="polite"></div><div class="side-buttonrow"><button type="button" class="btn lite" id="btnLoadAll">Load All Names</button><button type="button" class="btn" id="btnClearInputs">Clear list</button></div><div class="side-title" style="margin-top:17px;margin-bottom:7px">Names on the wheel</div><div id="namesList" class="names-list" aria-live="polite"><div class="empty-list">The name list will appear here</div></div></div>
+      <div class="side-section"><div class="side-title">⚙ Team settings</div><div id="summaryPlaceholder" class="summary-placeholder">The settings summary will appear <b>after all team assignments are finished</b>.<br/>You can change the setup through <b>Configure Teams</b> in the top menu.</div><div id="finalSummarySection" class="setting-box final-summary"><div class="setting-row"><span>Assignment method</span><span class="readonly">Fixed teams</span></div><div class="setting-row"><span>Revealed</span><strong id="revealedSide">0 / 34</strong></div><div class="meter" aria-label="Reveal progress percentage"><div id="progress"></div></div><div class="note"><span style="font-size:17px">✓</span><div><b>All teams have been fully revealed.</b><br/>This final summary appears automatically after every participant has been assigned to their team.</div></div><button type="button" class="btn admin-link" id="btnEditorSide" style="width:100%;margin-top:13px">⚙ Edit Setup &amp; Results</button></div></div>
+      <div class="side-footer"><button type="button" id="btnRepeat" class="btn lite">↺ Restart round</button><button type="button" id="btnResults" class="btn green">View results →</button></div>
+    </aside>
+  </div>
+</main>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<div id="settingsModal" class="modal-backdrop" aria-hidden="true">
+  <div class="modal admin-modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="modal-top"><div><h2 id="settingsTitle">⚙ Settings Mode</h2><p>Set up team membership and result reveal steps before the presentation. This panel does not appear when closed.</p></div><button type="button" id="settingsClose" class="modal-close" aria-label="Close settings">×</button></div>
+    <div class="admin-tabs" role="tablist" aria-label="Settings types"><button id="tabTeams" type="button" class="admin-tab active" role="tab" aria-selected="true">① Edit names &amp; teams</button><button id="tabReveal" type="button" class="admin-tab" role="tab" aria-selected="false">② Set results &amp; order</button></div>
+    <section id="panelTeams" class="admin-panel" role="tabpanel">
+      <p class="admin-hint">Enter one name per line in the target team. You may change, add, delete, or move names between teams. The default setup contains 34 participants. <b>Saving setup changes will reset the reveal results</b> to keep everything consistent.</p>
+      <div id="adminGrid" class="admin-grid"></div>
+      <div id="adminStatus" class="admin-state" role="status"></div>
+      <div class="admin-footer"><button type="button" id="btnRestoreGroups" class="btn">Restore original 34 names</button><button type="button" id="btnSaveGroups" class="btn green">✓ Save Setup</button></div>
+    </section>
+    <section id="panelReveal" class="admin-panel" role="tabpanel" hidden>
+      <p class="admin-hint">To simulate progress such as <b>3 / 34 already revealed</b>, check the names you want to show on the board, then press Apply Display. The remaining participants will stay ready on the wheel. You can also choose the next name for the following spin.</p>
+      <div class="admin-line"><button type="button" id="seedCheckNone" class="btn">Clear checks</button><button type="button" id="seedCheckAll" class="btn">Check all</button><span id="seedCounter" class="count-pill">0 names selected</span></div>
+      <div id="seedGrid" class="seed-layout"></div>
+      <div class="admin-footer"><button type="button" id="btnApplySeed" class="btn green">✓ Apply Board Display</button></div>
+      <div style="height:1px;background:#e6eee0;margin:17px 0"></div>
+      <label for="forcedNext" class="side-title" style="display:block;margin-bottom:7px">Participant for the next spin (optional)</label>
+      <div class="admin-line"><select id="forcedNext"><option value="">Random from wheel names</option></select><button type="button" id="btnSaveNext" class="btn yellow">Save choice</button></div>
+      <p class="helper">If you choose a specific name, the wheel animation will stop exactly on that name. This is a <b>planned-result simulation</b> feature, not a purely random draw.</p>
+      <div id="simStatus" class="admin-state" role="status"></div>
+    </section>
+    <div class="admin-footer" style="border-top:1px solid #eef0e9;padding-top:12px"><button type="button" id="btnSaveJson" class="btn">↓ Backup configuration</button><button type="button" id="btnLoadJson" class="btn">↑ Restore from JSON</button><input id="loadJsonFile" type="file" accept=".json,application/json" hidden><button type="button" id="btnCloseSettings" class="btn green">Done / Back to wheel</button></div>
+  </div>
+</div>
+<script>
+(()=>{'use strict';
+const defaultGroups=[
+ ['Novita Indri Ramadhani','Trista Olivia','Muhammad Fauzan Satryo','Raka Ardian Nugraha','Retnadila Endah Priyono'],
+ ['Galang Arya Ramadhan','Jihan Aryanti','Azkiya Satya Madyantara','Vatlysius Markus Lumban Gaol','Kafka Azraei Widiatmoko'],
+ ['Fahrozi Akmal Guchi','Virginia Putri Gautama','Dwi Nafisah Anggraeni','Ahmad Arya Negara'],
+ ['Fauzan Zen','Ayla Syifa Nur Arsya','Dimas Seno Priyanto','Azkha Putra Ardiansyah'],
+ ['Irfan Kamal Saputra','Rizky Alamsyah Tanjung','Habiby','Revangga Dwi Surya Kharisma Putra'],
+ ['Abyan Dzakwan Basysyar','Muhamad Ilham Ramadan','Helga Restu Gunawan','Muhammad Reinan Erlangga Kirana'],
+ ['Rafi Restu Ardana','Rido Fahri Firmansyah','Win Arigayo','Muhammad Zaky Ihtadansyah'],
+ ['Elyan Tyas Saputra','Dika Ardaniansyah Efendi','Muhammad Fadhli Juliansyah','Ariel Erlangga']
+];
+let predetermined=defaultGroups.map(group=>[...group]),names=[],byKey=new Map(),byName=new Map();
+const norm=s=>s.normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('id').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+function rebuild(){names=predetermined.flatMap((group,g)=>group.map((name,n)=>({name,g,key:g+':'+n})));byKey=new Map(names.map(p=>[p.key,p]));byName=new Map(names.map(p=>[norm(p.name),p]));}
+rebuild();
+const $=id=>document.getElementById(id),canvas=$('wheel'),ctx=canvas.getContext('2d'),TAU=2*Math.PI;
+const colors=['#69a249','#f8c632','#a8c964','#dfb140','#5ea780','#80b9b5','#bb9bc0','#e1a671'];
+let queue=[],announced=new Set(),rotation=0,spinning=false,highlight=-1,animatingAll=false,lastPerson=null,toastTimer,forcedNext="";
+function rnd(n){if(n<=1)return 0;if(window.crypto?.getRandomValues){const a=new Uint32Array(1),max=2**32,limit=max-max%n;do{crypto.getRandomValues(a)}while(a[0]>=limit);return a[0]%n}return Math.floor(Math.random()*n)}
+function notify(message,bad=false){const el=$('toast');el.textContent=message;el.style.background=bad?'#88472f':'#273d30';el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),3000)}
+function status(message='',ok=false){$('status').textContent=message;$('status').style.color=ok?'#348453':'#bd603b'}
+function save(){try{localStorage.setItem('kelompok-picker-v4',JSON.stringify({groups:predetermined,queue:queue.map(p=>p.key),announced:[...announced],forcedNext}))}catch(e){}}
+function load(){try{const stored=JSON.parse(localStorage.getItem('kelompok-picker-v4')||'null');if(!stored)return;if(Array.isArray(stored.groups)&&stored.groups.length===8&&stored.groups.every(g=>Array.isArray(g))) {predetermined=stored.groups;rebuild();}announced=new Set((stored.announced||[]).filter(k=>byKey.has(k)));queue=[...new Set(stored.queue||[])].filter(k=>byKey.has(k)&&!announced.has(k)).map(k=>byKey.get(k));forcedNext=queue.some(p=>p.key===stored.forcedNext)?stored.forcedNext:'';}catch(e){}}
+function make(tag,cls,text){const x=document.createElement(tag);if(cls)x.className=cls;if(text!==undefined)x.textContent=text;return x}
+function renderNames(){const box=$('namesList');box.replaceChildren();$('inputsCount').textContent=queue.length+' names';if(!queue.length){box.append(make('div','empty-list','The name list will appear here'));return}
+ queue.forEach((p,i)=>{const row=make('div','item'),num=make('span','index',String(i+1)+'.'),label=make('span','name',p.name),del=make('button','del','×');del.type='button';del.title='Remove '+p.name;del.disabled=spinning||animatingAll;del.addEventListener('click',()=>{if(spinning||animatingAll)return;queue=queue.filter(q=>q.key!==p.key);render();save()});row.append(num,label,del);box.append(row)})}
+function renderGroups(){const root=$('groups');root.replaceChildren();predetermined.forEach((group,g)=>{const card=make('article','team-card'+(g===highlight?' active':'')),head=make('div','team-title'),title=make('span','',`Team ${g+1}`),memberList=names.filter(p=>p.g===g&&announced.has(p.key));head.append(title);const body=make('div','team-body');if(!memberList.length)body.append(make('div','no-member','No members yet'));else memberList.forEach((p,i)=>{const item=make('div','member'),no=make('span','member-number',`${i+1}.`),label=make('span','',p.name);item.append(no,label);body.append(item)});card.append(head,body);root.append(card)});
+ $('doneCount').textContent=announced.size;$('revealedSide').textContent=announced.size+' / '+names.length;$('progress').style.width=(names.length?100*announced.size/names.length:0)+'%';document.querySelector('.subpill').lastChild.textContent=' / '+names.length+' names revealed'}
+function wheel(){const cx=360,cy=360,r=318;ctx.clearRect(0,0,720,720);
+ ctx.beginPath();ctx.arc(cx,cy,r+22,0,TAU);ctx.fillStyle='#e1e7dc';ctx.fill();ctx.beginPath();ctx.arc(cx,cy,r+11,0,TAU);ctx.fillStyle='#fff';ctx.fill();
+ if(queue.length){const step=TAU/queue.length;queue.forEach((p,i)=>{const a=-Math.PI/2+rotation+i*step,mid=a+step/2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,a,a+step);ctx.closePath();ctx.fillStyle=colors[p.g];ctx.fill();ctx.lineWidth=2.2;ctx.strokeStyle='#fff';ctx.stroke();ctx.save();ctx.translate(cx,cy);ctx.rotate(mid);const flip=Math.cos(mid)<0;ctx.translate(r*.64,0);if(flip)ctx.rotate(Math.PI);ctx.font='800 '+(queue.length>25?13:queue.length>15?16:queue.length>9?18:queue.length>5?21:26)+'px system-ui';ctx.fillStyle=(p.g===1||p.g===3)?'#37422c':'#fff';ctx.textBaseline='middle';ctx.textAlign='center';ctx.shadowColor='#36462b66';ctx.shadowBlur=2;ctx.fillText(p.name.length>19?p.name.slice(0,18)+'…':p.name,0,0,270);ctx.restore()})}
+ else{const step=TAU/8;for(let i=0;i<8;i++){const a=-Math.PI/2+i*step;ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,a,a+step);ctx.closePath();ctx.fillStyle=colors[i]+'78';ctx.fill();ctx.lineWidth=2;ctx.strokeStyle='white';ctx.stroke()}}
+ for(let k=0;k<32;k++){const a=TAU*k/32;ctx.beginPath();ctx.arc(cx+Math.cos(a)*(r+16),cy+Math.sin(a)*(r+16),3.3,0,TAU);ctx.fillStyle=k%2?'#d4aa25':'#679d60';ctx.fill()}
+ ctx.beginPath();ctx.arc(cx,cy,59,0,TAU);ctx.fillStyle='#fff';ctx.fill();ctx.strokeStyle='#ecf0e8';ctx.lineWidth=3;ctx.stroke()}
+function render(){renderNames();renderGroups();wheel();const finished=!!names.length&&announced.size===names.length;$('finalSummarySection').classList.toggle('show',finished);$('summaryPlaceholder').style.display=finished?'none':'block';let busy=spinning||animatingAll;for(const id of ['btnSpin','btnSpinWide','btnAll'])$(id).disabled=busy||!queue.length;for(const id of ['btnEnterNames','btnLoadAll','btnClearInputs','btnRepeat','btnReset'])$(id).disabled=busy;$('nameInput').disabled=busy;$('btnSpin').textContent=busy?'···':queue.length>0&&queue.length<3?'ADD REST':'START ×3';$('btnSpinWide').textContent='SPIN WHEEL';save()}
+function acceptEnteredNames(){
+  if(spinning||animatingAll)return;
+  const input=$('nameInput');
+  const lines=input.value.replace(/\r\n?/g,'\n').split('\n');
+  let added=0,duplicates=0;
+  const unrecognized=[];
+  for(const raw of lines){
+    const value=raw.trim();
+    if(!value)continue;
+    const person=byName.get(norm(value));
+    if(!person){unrecognized.push(value);continue}
+    if(announced.has(person.key)||queue.some(p=>p.key===person.key)){duplicates++;continue}
+    queue.push(person);
+    added++;
+  }
+  // Only keep unknown names for correction; confirmed names leave the text box.
+  input.value=unrecognized.join('\n');
+  if(added)render();
+  if(unrecognized.length){
+    status((added?'✓ '+added+' added. ':'')+'Not in the configured list: '+unrecognized.slice(0,2).join(', ')+(unrecognized.length>2?'…':''));
+  }else if(added){
+    status('✓ '+added+' '+(added===1?'name':'names')+' added to the wheel.',true);
+  }else if(duplicates){
+    status('Those names are already on the wheel or have been revealed.',true);
+  }else{
+    status('Type or paste names, then click ENTER NAMES.');
+  }
+}
+
+function addSome(count){if(spinning||animatingAll)return;let added=0;const candidates=count===5?[names[0],names[5],names[10],names[18],names[22]]:names;for(const p of candidates){if(queue.some(q=>q.key===p.key)||announced.has(p.key))continue;queue.push(p);added++;if(count>0&&added>=count)break}render();notify(added?`${added} names added successfully.`:'All names are already loaded.');status('')}
+// The first name is where the animation stops; the other two are selected
+// without replacement from the same queued participant pool.
+// Preselected next-name settings affect only the first selection.
+function announceBatch(picked, automatic=[]){
+  const selections=[...picked,...automatic];
+  if(!selections.length)return;
+  const consumed=new Set(selections.map(p=>p.key));
+  selections.forEach(p=>announced.add(p.key));
+  queue=queue.filter(p=>!consumed.has(p.key));
+  forcedNext='';
+  lastPerson=selections[selections.length-1];
+  highlight=lastPerson.g;
+  rotation=0;
+  spinning=false;
+  const count=picked.length;
+  if(count){
+    $('lastName').textContent='🎉 '+count+' '+(count===1?'name':'names')+' selected'+(automatic.length?' + '+automatic.length+' auto-assigned':'');
+  }else{
+    $('lastName').textContent='✓ '+automatic.length+' remaining '+(automatic.length===1?'name':'names')+' assigned';
+  }
+  const host=$('lastTeam');
+  host.replaceChildren();
+  const list=make('div','draw-result-list');
+  for(const p of selections){
+    const row=make('div','draw-result-row'+(automatic.some(a=>a.key===p.key)?' auto':''));
+    const name=make('span','draw-name',p.name);
+    const tag=make('span','draw-badge','Team '+(p.g+1)+(automatic.some(a=>a.key===p.key)?' · Auto':''));
+    row.append(name,tag);
+    list.append(row);
+  }
+  host.append(list);
+  render();
+  notify(selections.length+' '+(selections.length===1?'participant':'participants')+' assigned to their predefined teams.');
+}
+function spin(){
+  if(spinning||animatingAll||!queue.length)return;
+  // The last one or two names need no wheel animation.
+  if(queue.length<3){announceBatch([],[...queue]);return;}
+  const firstIndex=queue.findIndex(p=>p.key===forcedNext);
+  const ix=firstIndex>=0?firstIndex:rnd(queue.length);
+  const first=queue[ix];
+  const others=queue.filter(p=>p.key!==first.key);
+  const picked=[first];
+  for(let k=0;k<2;k++)picked.push(others.splice(rnd(others.length),1)[0]);
+  // When the next click would have fewer than three names, include them now.
+  const automatic=others.length>0&&others.length<3?[...others]:[];
+  const step=TAU/queue.length;
+  const start=(rotation%TAU+TAU)%TAU;
+  const target=((-(ix+.5)*step)%TAU+TAU)%TAU;
+  const delta=(target-start+TAU)%TAU;
+  const distance=(6+rnd(3))*TAU+delta;
+  const duration=3000;
+  const begin=performance.now();
+  spinning=true;
+  highlight=-1;
+  $('lastName').textContent='The wheel is spinning…';
+  $('lastTeam').textContent='Selecting three names';
+  render();
+  function frame(t){
+    const d=Math.min(1,(t-begin)/duration);
+    const ease=1-Math.pow(1-d,4);
+    rotation=start+distance*ease;
+    wheel();
+    if(d<1)requestAnimationFrame(frame);
+    else announceBatch(picked,automatic);
+  }
+  requestAnimationFrame(frame);
+}
+function revealAll(){if(spinning||animatingAll||!queue.length)return;forcedNext='';const batch=[...queue];for(let i=batch.length-1;i>0;i--){let j=rnd(i+1);[batch[i],batch[j]]=[batch[j],batch[i]]}animatingAll=true;highlight=-1;render();let i=0;const timer=setInterval(()=>{if(i>=batch.length){clearInterval(timer);animatingAll=false;highlight=-1;$('lastName').textContent='🎊 All names on the wheel have been revealed';$('lastTeam').textContent='Results follow the predefined team setup';render();notify('Team assignment completed.');return}let p=batch[i++];announced.add(p.key);queue=queue.filter(q=>q.key!==p.key);highlight=p.g;lastPerson=p;$('lastName').textContent=p.name;$('lastTeam').textContent='Team '+(p.g+1);render()},210)}
+function reset(all=false){if(spinning||animatingAll)return;if(all){announced.clear();queue=[];highlight=-1;lastPerson=null;$('lastName').textContent='No name selected yet';$('lastTeam').textContent='Selected participants will appear here'}else{const keys=new Set([...queue.map(p=>p.key),...announced]);queue=names.filter(p=>keys.has(p.key));announced.clear();highlight=-1;lastPerson=null;$('lastName').textContent='Ready for a new round';$('lastTeam').textContent='Press START to begin again'}rotation=0;forcedNext='';status('');render();notify(all?'The list and results were cleared.':'The draw was restarted. All names are back on the wheel.')}
+function resultText(){return predetermined.map((group,g)=>{const members=names.filter(p=>p.g===g&&announced.has(p.key));return `Team ${g+1} (${members.length}/${group.length} people)\n`+(members.length?members.map((p,i)=>`${i+1}. ${p.name}`).join('\n'):'No members yet')}).join('\n\n')}
+async function copyResult(){try{await navigator.clipboard.writeText(resultText());notify('Team results copied successfully.')}catch(e){const x=document.createElement('textarea');x.value=resultText();x.style.position='fixed';x.style.opacity='0';document.body.append(x);x.select();let ok=document.execCommand('copy');x.remove();notify(ok?'Team results copied successfully.':'Copying is not supported by this browser. Please use CSV export.',!ok)}}
+function exportCsv(){const rows=[['Team','Name','Status']];names.forEach(p=>rows.push([`Team ${p.g+1}`,p.name,announced.has(p.key)?'Revealed':'Not yet']));const csv='\ufeff'+rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');let url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='team_picker_results.csv';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);notify('CSV created successfully.')}
+function refreshSuggestions(){} // No autocomplete dropdown: the textarea is the direct input.
+// Pasting and typing are drafts: only clicking this button commits names.
+$('btnEnterNames').addEventListener('click',acceptEnteredNames);
+$('btnLoadAll').addEventListener('click',()=>addSome(0));$('btnSpin').addEventListener('click',spin);$('btnSpinWide').addEventListener('click',spin);$('btnAll').addEventListener('click',revealAll);$('btnRepeat').addEventListener('click',()=>reset(false));$('btnReset').addEventListener('click',()=>reset(false));$('btnClearInputs').addEventListener('click',()=>{if(spinning||animatingAll)return;queue=[];forcedNext='';$('nameInput').value='';status('');render();notify('The queued name list has been cleared.')});$('btnCopy').addEventListener('click',copyResult);$('btnExport').addEventListener('click',exportCsv);$('btnResults').addEventListener('click',()=>$('groupBoard').scrollIntoView({behavior:'smooth',block:'start'}));$('btnBoard').addEventListener('click',()=>$('groupBoard').scrollIntoView({behavior:'smooth',block:'start'}));
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='Enter'&&!$('settingsModal').classList.contains('open')){
+    e.preventDefault();spin();
+  }
+});
+$('btnFullscreen').addEventListener('click',async()=>{try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen()}catch(e){notify('Fullscreen mode is not available in this browser.',true)}});
+
+function settingsOpen(open){if(spinning||animatingAll){notify('Please finish the animation first.',true);return}const modal=$('settingsModal');modal.classList.toggle('open',open);modal.setAttribute('aria-hidden',String(!open));if(open){switchTab('teams');renderEditor();renderSeed();refreshForced();}else $('nameInput').focus()}
+function switchTab(which){const isTeam=which==='teams';$('panelTeams').hidden=!isTeam;$('panelReveal').hidden=isTeam;$('tabTeams').classList.toggle('active',isTeam);$('tabReveal').classList.toggle('active',!isTeam);$('tabTeams').setAttribute('aria-selected',String(isTeam));$('tabReveal').setAttribute('aria-selected',String(!isTeam));if(!isTeam){renderSeed();refreshForced()}}
+function renderEditor(){const host=$('adminGrid');host.replaceChildren();predetermined.forEach((group,g)=>{let item=make('div','admin-team'),head=make('div','admin-team-head'),title=make('span','',`Team ${g+1}`),ct=make('span','',group.length+' names'),ta=make('textarea');ta.id='editorGroup'+g;ta.setAttribute('aria-label','Names for Team '+(g+1));ta.spellcheck=false;ta.placeholder='One name per line';ta.value=group.join('\n');head.append(title,ct);item.append(head,ta);host.append(item);ta.addEventListener('input',()=>ct.textContent=ta.value.split(/\r?\n/).filter(a=>a.trim()).length+' names')});$('adminStatus').textContent=''}
+function getEdited(){return Array.from({length:8},(_,g)=>$('editorGroup'+g).value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean))}
+function validGroups(groups){const count=groups.reduce((a,g)=>a+g.length,0);if(!count||count>120)return 'The list must contain between 1 and 120 names.';const hit=new Map();for(let g=0;g<groups.length;g++){for(const name of groups[g]){const key=norm(name);if(!key)return 'There is an invalid name.';if(hit.has(key))return `Duplicate name: ${name} (Team ${hit.get(key)+1} and ${g+1}).`;hit.set(key,g)}}return ''}
+function applyGroups(groups){predetermined=groups.map(g=>[...g]);rebuild();queue=[];announced.clear();highlight=-1;lastPerson=null;forcedNext='';rotation=0;$('lastName').textContent='Team setup is ready';$('lastTeam').textContent='Enter participants or load all names';refreshSuggestions();render();renderSeed();refreshForced()}
+function saveEdited(){const groups=getEdited(),error=validGroups(groups);if(error){$('adminStatus').textContent='⚠ '+error;$('adminStatus').classList.add('admin-danger');return}if(announced.size&& !window.confirm('Changing the setup will clear the progress of already revealed results. Continue?'))return;applyGroups(groups);$('adminStatus').classList.remove('admin-danger');$('adminStatus').textContent='✓ Setup saved ('+names.length+' participants). Reveal results were reset.';notify('New setup saved!')}
+function restore(){if(!window.confirm('Restore all 34 names and eight teams to the default setup?'))return;applyGroups(defaultGroups);renderEditor();$('adminStatus').classList.remove('admin-danger');$('adminStatus').textContent='✓ The default list has been restored.';notify('Default setup restored.')}
+function renderSeed(){const host=$('seedGrid');host.replaceChildren();predetermined.forEach((group,g)=>{const item=make('div','seed-team'),head=make('strong','',`Team ${g+1}`);item.append(head);names.filter(p=>p.g===g).forEach(p=>{const label=make('label'),check=document.createElement('input'),txt=make('span','',p.name);check.type='checkbox';check.className='seedCheck';check.value=p.key;check.checked=announced.has(p.key);check.addEventListener('change',updateSeedCount);label.append(check,txt);item.append(label)});host.append(item)});updateSeedCount()}
+function updateSeedCount(){$('seedCounter').textContent=document.querySelectorAll('.seedCheck:checked').length+' names selected'}
+function applySeed(){const keys=[...document.querySelectorAll('.seedCheck:checked')].map(el=>el.value);announced=new Set(keys);queue=names.filter(p=>!announced.has(p.key));forcedNext='';highlight=-1;rotation=0;$('lastName').textContent=keys.length?keys.length+' names already displayed':'The result board was cleared';$('lastTeam').textContent='Please continue with the next spin';render();refreshForced();$('simStatus').textContent='✓ The board now shows '+keys.length+' / '+names.length+' names. The remaining participants are ready on the wheel.';notify('Board display updated.');}
+function refreshForced(){const sel=$('forcedNext'),v=forcedNext;sel.replaceChildren();const none=document.createElement('option');none.value='';none.textContent='Random from wheel names';sel.append(none);queue.forEach(p=>{const opt=document.createElement('option');opt.value=p.key;opt.textContent=p.name+' — Team '+(p.g+1);sel.append(opt)});sel.value=queue.some(p=>p.key===v)?v:'';}
+function saveForced(){forcedNext=$('forcedNext').value;save();$('simStatus').textContent=forcedNext?'✓ Next: '+byKey.get(forcedNext).name+' (planned simulation).':'✓ The next order will be randomized from the remaining names.';notify('Next spin setting saved.')}
+function exportConfig(){const json=JSON.stringify({version:4,groups:predetermined,announced:[...announced],queue:queue.map(p=>p.key),forcedNext},null,2);const url=URL.createObjectURL(new Blob([json],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='team_picker_configuration.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);notify('Configuration saved as JSON.');}
+$('btnSettings').addEventListener('click',()=>settingsOpen(true));$('btnEditorSide').addEventListener('click',()=>settingsOpen(true));$('settingsClose').addEventListener('click',()=>settingsOpen(false));$('btnCloseSettings').addEventListener('click',()=>settingsOpen(false));$('settingsModal').addEventListener('click',e=>{if(e.target===$('settingsModal'))settingsOpen(false)});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('settingsModal').classList.contains('open'))settingsOpen(false)});
+$('tabTeams').addEventListener('click',()=>switchTab('teams'));$('tabReveal').addEventListener('click',()=>switchTab('reveal'));
+$('btnSaveGroups').addEventListener('click',saveEdited);$('btnRestoreGroups').addEventListener('click',restore);$('btnApplySeed').addEventListener('click',applySeed);$('seedCheckNone').addEventListener('click',()=>{document.querySelectorAll('.seedCheck').forEach(el=>el.checked=false);updateSeedCount()});$('seedCheckAll').addEventListener('click',()=>{document.querySelectorAll('.seedCheck').forEach(el=>el.checked=true);updateSeedCount()});$('btnSaveNext').addEventListener('click',saveForced);$('btnSaveJson').addEventListener('click',exportConfig);
+$('btnLoadJson').addEventListener('click',()=>$('loadJsonFile').click());
+$('loadJsonFile').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const data=JSON.parse(await file.text());const groups=data.groups;if(!Array.isArray(groups)||groups.length!==8||!groups.every(g=>Array.isArray(g)&&g.every(x=>typeof x==='string')))throw Error('Invalid JSON structure.');const cleaned=groups.map(g=>g.map(v=>v.trim()).filter(Boolean)),error=validGroups(cleaned);if(error)throw Error(error);if(!window.confirm('Restore setup and progress from this JSON file?'))return;applyGroups(cleaned);announced=new Set((data.announced||[]).filter(k=>byKey.has(k)));queue=[...new Set(data.queue||[])].filter(k=>byKey.has(k)&&!announced.has(k)).map(k=>byKey.get(k));forcedNext=queue.some(p=>p.key===data.forcedNext)?data.forcedNext:'';renderEditor();renderSeed();refreshForced();render();$('adminStatus').textContent='✓ JSON configuration restored, including already revealed results.';notify('Configuration restored successfully.')}catch(error){notify('Failed to read JSON: '+error.message,true)}finally{e.target.value=''}});
+
+load();refreshSuggestions();render();
+})();
+</script>
+</body>
+</html>
